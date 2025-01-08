@@ -19,6 +19,8 @@ public partial class Room
 
     public double Price { get; set; }
 
+    public double DiscountedPrice { get; set; }
+
     public virtual ICollection<BookRoom> BookRooms { get; } = new List<BookRoom>();
 
     public virtual Hotel Hotel { get; set; } = null!;

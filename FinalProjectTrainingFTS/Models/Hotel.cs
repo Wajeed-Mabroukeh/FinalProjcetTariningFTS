@@ -18,6 +18,7 @@ public partial class Hotel
     public string Image { get; set; } = null!;
 
     public string Descriptions { get; set; } = null!;
+    public string Amenities { get; set; }
 
     public virtual City City { get; set; } = null!;
 

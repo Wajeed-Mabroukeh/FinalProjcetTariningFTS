@@ -20,13 +20,13 @@ public class ControllerLogin : ControllerBase
     
     
     [HttpGet("User")]
-    public string GetLoginU([FromBody] LoginRequest loginRequest)
+    public Dictionary<string, string> GetLoginU([FromBody] LoginRequest loginRequest)
     {
         return entity.GetLoginUser(loginRequest.UserName, loginRequest.Password);
     }
     
     [HttpGet("Admin")]
-    public string GetLoginA([FromBody] LoginRequest loginRequest)
+    public Dictionary<string, string> GetLoginA([FromBody] LoginRequest loginRequest)
     {
         return entity.GetLoginAdmin(loginRequest.UserName, loginRequest.Password);
     }

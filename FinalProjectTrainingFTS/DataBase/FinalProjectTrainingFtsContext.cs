@@ -1,4 +1,6 @@
-﻿using FinalProjectTrainingFTS.Models;
+﻿using System;
+using System.Collections.Generic;
+using FinalProjectTrainingFTS.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectTrainingFTS.DataBase;
@@ -147,6 +149,9 @@ public partial class FinalProjectTrainingFtsContext : DbContext
                 .HasMaxLength(128)
                 .IsFixedLength();
             entity.Property(e => e.UserName).HasMaxLength(50);
+            entity.Property(e => e.VisitedHotels)
+                .HasMaxLength(200)
+                .IsUnicode(false);
         });
 
         OnModelCreatingPartial(modelBuilder);
