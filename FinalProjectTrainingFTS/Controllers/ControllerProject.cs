@@ -18,8 +18,9 @@ public class ControllerProject : ControllerBase
        _configuration = configuration;
        entity = new CustomerService.CustomerService(_configuration);
    }
+
+    #region User
    
-    
     #region FeaturedDeals
     [Authorize(Roles = "User")]
     [HttpGet("FeaturedDeals")] 
@@ -28,7 +29,7 @@ public class ControllerProject : ControllerBase
         return entity.GetFeaturedDealsHotels();
     }
     #endregion
- 
+   
     #region User's Recently Visited Hotels
     [Authorize(Roles = "User")]
     [HttpGet("RecentlyVisitedHotels")] 
@@ -85,7 +86,7 @@ public class ControllerProject : ControllerBase
     }
     
     #endregion
-
+   
     #region Visual Gallery (Get Image)
     
     [HttpGet("get-image/{imageName}")]
@@ -94,8 +95,41 @@ public class ControllerProject : ControllerBase
         return entity.GetImage(imageName);
     }
     #endregion
+   
+    #region Room Availability
+    
+    [HttpGet("RoomAvailability")]
+    public List<Room> GetAvailabileRoom(AvailableRequest request)
+    {
+        return entity.GetAvailabileRoom(request);
+    }
+   
+    #endregion
+    
+    
+    #region Get Login User
+    
+    [HttpGet("User/Login")]
+    public User GetLoginUser()
+    {
+        return entity.GetLoginUser();
+    }
+    #endregion
+   
+    #region BookRoom Payment
+   // [Authorize(Roles = "User")]
+    [HttpPost("BookRoom/Payment")] 
+    public async Task<string> BookRoom_Payment([FromBody] BookRequest request)
+    {
+        return await entity.BookRoom_Payment(request);
+    }
+    #endregion
+    #endregion
 
-    #region MyRegion
+    
+    #region Admin
+    
+    #region Upload Image
 
     [HttpPost("Upload")]
     public async Task<string> UploadImage([FromForm] IFormFile imageFile)
@@ -103,6 +137,186 @@ public class ControllerProject : ControllerBase
         return await entity.upload_image(imageFile);
     }
 
+    #endregion
+    
+    #region Location
+
+    [HttpPut("Location")]
+    public async Task SetLocation([FromBody] SetLocation location)
+    {
+         await entity.SetLocation(location);
+    }
+
+    #endregion
+
+ 
+    
+    #region Management Cities API 
+    
+    [HttpPost("Create/Cities")]
+    public void SetCities([FromBody] City city)
+    {
+        entity.SetCity(city);
+    }
+    
+    [HttpPut ("Update/City")]
+    public void UpdateCity([FromBody] City city)
+    {
+        entity.UpdateCity(city);
+    }
+    
+    [HttpGet("GetCities")]
+    public List<City> GetCities()
+    {
+        return entity.GetCities();
+    }
+    
+    [HttpGet("GetCity/{id}")]
+    public City GetCity(int id)
+    {
+        return entity.GetCity(id);
+    }
+    
+    [HttpDelete("Delete/City/{id}")]
+    public void DeleteCity(int id)
+    {
+        entity.DeleteCity(id);
+    }
+    
+    
+    [HttpDelete("Delete/Cities")]
+    public void DeleteCities()
+    {
+         entity.DeleteCities();
+    }
+    
+    #endregion
+    
+    #region Management Hotels API 
+    
+    
+    [HttpPost("Create/Hotel")]
+    public void SetHotel([FromBody] Hotel hotel)
+    {
+        entity.SetHotel(hotel);
+    }
+    
+    [HttpPut ("Update/Hotel")]
+    public void UpdateHotel([FromBody] Hotel hotel)
+    {
+        entity.UpdateHotel(hotel);
+    }
+    
+    [HttpGet("GetHotel")]
+    public List<Hotel> GetHotel()
+    {
+        return entity.GetHotels();
+    }
+    
+    [HttpGet("GetHotel/{id}")]
+    public Hotel GetHotel(int id)
+    {
+        return entity.GetHotel(id);
+    }
+    
+    [HttpDelete("Delete/Hotel/{id}")]
+    public void DeleteHotel(int id)
+    {
+        entity.DeleteHotel(id);
+    }
+    
+    
+    [HttpDelete("Delete/Hotels")]
+    public void DeleteHotels()
+    {
+        entity.DeleteHotels();
+    }
+    
+    #endregion
+    
+    #region Management Rooms API 
+    
+    
+    [HttpPost("Create/Room")]
+    public void SetRoom([FromBody] Room room)
+    {
+        entity.SetRoom(room);
+    }
+    
+    [HttpPut ("Update/Room")]
+    public void UpdateRoom([FromBody] Room room)
+    {
+        entity.UpdateRoom(room);
+    }
+    
+    [HttpGet("GetRoom")]
+    public List<Room> GetRoom()
+    {
+        return entity.GetRooms();
+    }
+    
+    [HttpGet("GetRoom/{id}")]
+    public Room GetRoom(int id)
+    {
+        return entity.GetRoom(id);
+    }
+    
+    [HttpDelete("Delete/Room/{id}")]
+    public void DeleteRoom(int id)
+    {
+        entity.DeleteRoom(id);
+    }
+    
+    [HttpDelete("Delete/Rooms")]
+    public void DeleteRooms()
+    {
+        entity.DeleteRooms();
+    }
+    
+    #endregion
+    
+    #region Management Book Rooms API 
+    
+    
+    [HttpPost("Create/BookRoom")]
+    public void SetBookRoom([FromBody] BookRoom bookroom)
+    {
+        entity.SetBookRoom(bookroom);
+    }
+    
+    [HttpPut ("Update/BookRoom")]
+    public void UpdateBookRoom([FromBody] BookRoom bookroom)
+    {
+        entity.UpdateBookRoom(bookroom);
+    }
+    
+    [HttpGet("GetBookRooms")]
+    public List<BookRoom> GetBookRooms()
+    {
+        return entity.GetBookRooms();
+    }
+    
+    [HttpGet("GetBookRoom/{id}")]
+    public BookRoom GetBokRoom(int id)
+    {
+        return entity.GetBookRoom(id);
+    }
+    
+    [HttpDelete("Delete/BookRoom/{id}")]
+    public void DeleteBookRoom(int id)
+    {
+        entity.DeleteBookRoom(id);
+    }
+    
+    [HttpDelete("Delete/BookRooms")]
+    public void DeleteBookRooms()
+    {
+        entity.DeleteBookRooms();
+    }
+    
+    #endregion
+    
+    
     #endregion
     
 }

@@ -13,14 +13,19 @@ public partial class Hotel
 
     public int Id { get; set; }
 
-    public int CityId { get; set; }
+    public int? CityId { get; set; }
 
     public string Image { get; set; } = null!;
 
     public string Descriptions { get; set; } = null!;
-    public string Amenities { get; set; }
 
-    public virtual City City { get; set; } = null!;
+    public string? Amenities { get; set; }
 
+    public string? Latitude { get; set; }
+
+    public string? Longitude { get; set; }
+
+    public virtual City? City { get; set; }
+    
     public virtual ICollection<Room> Rooms { get; } = new List<Room>();
 }

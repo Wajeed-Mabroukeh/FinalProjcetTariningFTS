@@ -12,9 +12,10 @@ public partial class City
     public int PostOffice { get; set; }
 
     public int Id { get; set; }
-    public int? VisitCount { get; set; }
 
     public string Image { get; set; } = null!;
+
+    public int? VisitCount { get; set; }
 
     public virtual ICollection<Hotel> Hotels { get; } = new List<Hotel>();
 }

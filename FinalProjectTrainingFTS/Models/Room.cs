@@ -11,7 +11,7 @@ public partial class Room
 
     public int Children { get; set; }
 
-    public int HotelId { get; set; }
+    public int? HotelId { get; set; }
 
     public string Image { get; set; } = null!;
 
@@ -22,6 +22,4 @@ public partial class Room
     public double DiscountedPrice { get; set; }
 
     public virtual ICollection<BookRoom> BookRooms { get; } = new List<BookRoom>();
-
-    public virtual Hotel Hotel { get; set; } = null!;
 }

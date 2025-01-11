@@ -1,18 +1,11 @@
-using System.Collections.Immutable;
 using System.Data.Entity;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.IO;
 using FinalProjectTrainingFTS.DataBase;
+using Microsoft.AspNetCore.Mvc;
+using GoogleMapsApi;
+using GoogleMapsApi.Entities.Geocoding.Request;
+using EFCore.BulkExtensions;
 using FinalProjectTrainingFTS.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using Microsoft.AspNetCore.Server.IIS.Core;
+
 
 
 namespace FinalProjectTrainingFTS.CustomerService;
@@ -29,8 +22,8 @@ public class CustomerService
     {
         _configuration = configuration;
     }
-    
 
+    #region User
     public Dictionary<string, string> GetLoginUser(string inputUsername, string inputPassword)
     {
         if (string.IsNullOrEmpty(inputUsername) || string.IsNullOrEmpty(inputPassword))
@@ -46,32 +39,6 @@ public class CustomerService
             user_in = user;
             var tokenService = new JwtTokenService(_configuration);
             var token = tokenService.GenerateToken(user.UserName, 1);
-            result.Add("access_token",token);
-        }
-        else
-        {
-            result.Add("access_token","Error");
-        }
-
-
-        return result;
-    }
-
-    public Dictionary<string, string> GetLoginAdmin(string inputUsername, string inputPassword)
-    {
-        if (string.IsNullOrEmpty(inputUsername) || string.IsNullOrEmpty(inputPassword))
-        {
-            return null;
-        }
-
-        var admin = _context.Admins
-            .FirstOrDefault(u => u.UserName == inputUsername && u.Password == inputPassword);
-
-        Dictionary<string, string> result = new();
-        if (!admin.Equals(null))
-        {
-            var tokenService = new JwtTokenService(_configuration);
-            var token = tokenService.GenerateToken(admin.UserName, 0);
             result.Add("access_token",token);
         }
         else
@@ -286,7 +253,92 @@ public class CustomerService
 
        // return fileBytes;
     }
+
+    public List<Room> GetAvailabileRoom(AvailableRequest request)
+    {
+        
+         var  rooms_available = _context.Rooms.Include(r=>r.BookRooms)
+            .Where(r=>r.HotelId == request.id_hotel)
+            .Where(r=>r.BookRooms.All(b => 
+                                           b.BookTo < request.bookfrom ||
+                                           b.BookFrom > request.bookto 
+                                           )).ToList();
+         return rooms_available;
+    }
+
+    public User GetLoginUser()
+    {
+        return user_in;
+    }
+
+
+    public async Task<string> BookRoom_Payment(BookRequest request)
+    {
+        //payment 
+        bool Payment_made = true;
+        if (Payment_made)
+        {
+            Random random = new Random();
+            int random_id = random.Next();
+            if (GetBookRoom(random_id) == null )
+            {
+                if (request.book_from <= request.book_to)
+                {
+                    var book_room = new BookRoom();
+                    book_room.Id = random_id;
+                    book_room.RoomId = request.id_room;
+                    book_room.UserId = user_in.Id;
+                    book_room.BookFrom = request.book_from;
+                    book_room.BookTo = request.book_to;
+                    await SetBookRoom(book_room);
+                    var hotel = _context.Hotels.Include(r => r.Rooms)
+                        .Where(h => h.Rooms.Any(r => r.RoomId == request.id_room)).FirstOrDefault();
+                    _context.Cities.Where(c => c.Id == hotel.CityId)
+                        .FirstOrDefault().VisitCount++;
+                    _context.SaveChanges();
+                    return $"Successfully Book Room that ID :{random_id}";
+                }
+                return "The Book From must be the next day to Book To after the initial booking appointment.!";
+            }
+            else
+            {
+                return "You Already Book This Room!";
+            }
+         
+           
+        }
+        return "Payment problem, Try Again.";
+        
+    }
+    #endregion
     
+    #region Admin
+    
+    public Dictionary<string, string> GetLoginAdmin(string inputUsername, string inputPassword)
+    {
+        if (string.IsNullOrEmpty(inputUsername) || string.IsNullOrEmpty(inputPassword))
+        {
+            return null;
+        }
+
+        var admin = _context.Admins
+            .FirstOrDefault(u => u.UserName == inputUsername && u.Password == inputPassword);
+
+        Dictionary<string, string> result = new();
+        if (!admin.Equals(null))
+        {
+            var tokenService = new JwtTokenService(_configuration);
+            var token = tokenService.GenerateToken(admin.UserName, 0);
+            result.Add("access_token",token);
+        }
+        else
+        {
+            result.Add("access_token","Error");
+        }
+
+
+        return result;
+    }
     
     public async Task<string> upload_image (IFormFile imageFile){
         
@@ -319,14 +371,243 @@ public class CustomerService
         return "File uploaded successfully";
     }
     
+    public   async Task SetLocation( SetLocation location)
+    {
+        var request = new GeocodingRequest
+        {
+            Address = location.Address,
+            ApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiaWJyYWhpbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzM2MzYwMzIwLCJpc3MiOiJmaW5hbHByb2plY3R0cmFpbmluZ2Z0cyIsImF1ZCI6IldhamVlZCJ9.Khq4bNvmYeQxnKFEKBOEB6ioea0nnF9Ti4gxWYMvWsw"
+        };
+        var response = await GoogleMaps.Geocode.QueryAsync(request);
+        if (response.Status == GoogleMapsApi.Entities.Geocoding.Response.Status.OK)
+        {
+            var location_respinse = response.Results.First().Geometry.Location;
+            var hotel = _context.Hotels.Where(h => h.Id == location.id_hotel).FirstOrDefault();
+            hotel.Latitude = location_respinse.Latitude.ToString();
+            hotel.Longitude = location_respinse.Longitude.ToString();
+            _context.SaveChanges();
+            Console.WriteLine($"Latitude: {location_respinse.Latitude}, Longitude: {location_respinse.Longitude}");
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.Status}");
+        }
+    }
     
     
+    #region Management Cities
+    public List<City> GetCities()
+    {
+        if (_context.Cities.ToList() == null)
+        {
+            return null;
+        }
+        return _context.Cities.ToList();
+    }
     
+    public City GetCity(int id)
+    {  
+        var city = _context.Cities.Where(c=>c.Id == id).FirstOrDefault();
+        if (city == null)
+        {
+            return null;
+        }
+        return city;
+    }
     
+    public void SetCity(City city)
+    {
+        _context.Cities.Add(city);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Check may be the same name is exit in Database");
+        }
+    }
     
+    public void UpdateCity(City city)
+    {
+        var city_update = _context.Cities.Where(c=>c.Id == city.Id).FirstOrDefault();
+        city_update.Name = city.Name != "" ?  city.Name : city_update.Name;
+        city_update.Country = city.Country != "" ?  city.Country : city_update.Country;
+        city_update.Image = city.Image != "" ?  city.Image : city_update.Image; 
+        city_update.PostOffice = city.PostOffice != -1 ?  city.PostOffice : city_update.PostOffice;
+        _context.SaveChanges();
+    }
     
+    public void DeleteCity(int id)
+    {
+        var delete_city = _context.Cities.Where(c=>c.Id == id).FirstOrDefault();
+        _context.Cities.Remove(delete_city);
+        _context.SaveChanges();
+    }
     
-    // Helper method to determine MIME type
+    public void DeleteCities()
+    {
+        var delete_all_city = _context.Cities.ToList();
+        _context.BulkDelete(delete_all_city); 
+    }
+    
+    #endregion
+    
+    #region Management Hotels
+    public List<Hotel> GetHotels()
+    {
+        return _context.Hotels.ToList();
+    }
+    
+    public Hotel GetHotel(int id)
+    {  
+        var hotel = _context.Hotels.Where(c=>c.Id == id).FirstOrDefault();
+        if (hotel == null)
+        {
+            return null;
+        }
+        return hotel;
+    }
+    
+    public void SetHotel(Hotel hotel)
+    {
+        _context.Hotels.Add(hotel);
+        _context.SaveChanges();
+    }
+    
+    public void UpdateHotel(Hotel hotel)
+    {
+        var hotel_update = _context.Hotels.Where(h=>h.Id == hotel.Id).FirstOrDefault();
+        hotel_update.Name = hotel.Name != ""  ?  hotel.Name : hotel_update.Name;
+        hotel_update.Amenities = hotel.Amenities != ""  ?  hotel.Amenities : hotel_update.Amenities;
+        hotel_update.Descriptions = hotel.Descriptions != "" ?  hotel.Descriptions : hotel_update.Descriptions;
+        hotel_update.Image = hotel.Image != "" ?  hotel.Image : hotel_update.Image;
+        hotel_update.Owner = hotel.Owner != "" ?  hotel.Owner : hotel_update.Owner;
+        hotel_update.Longitude = hotel.Longitude != "" ?  hotel.Longitude : hotel_update.Longitude;
+        hotel_update.Latitude = hotel.Latitude != "" ?  hotel.Latitude : hotel_update.Latitude;
+        hotel_update.StarRate = hotel.StarRate != -1 ?  hotel.StarRate : hotel_update.StarRate;
+        hotel_update.CityId = hotel.CityId != -1 ?  hotel.CityId : hotel_update.CityId;
+        
+        _context.SaveChanges();
+    }
+    
+    public void DeleteHotel(int id)
+    {
+        var delete_hotel = _context.Hotels.Where(h=>h.Id == id).FirstOrDefault();
+        _context.Hotels.Remove(delete_hotel);
+        _context.SaveChanges();
+    }
+    
+    public void DeleteHotels()
+    {
+        var delete_all_hotel = _context.Hotels.ToList();
+        _context.BulkDelete(delete_all_hotel); 
+      }
+    
+    #endregion
+    
+    #region Management Rooms
+    
+    public List<Room> GetRooms()
+    {
+        return _context.Rooms.ToList();
+    }
+
+    public Room GetRoom(int id)
+    {  
+        var room = _context.Rooms.Where(r=>r.RoomId == id).FirstOrDefault();
+        if (room == null)
+        {
+            return null;
+        }
+        return room;
+    }
+    
+    public void SetRoom(Room room)
+    {
+        _context.Rooms.Add(room);
+        _context.SaveChanges();
+    }
+
+    public void UpdateRoom(Room room)
+    {
+        var room_update = _context.Rooms.Where(r=>r.RoomId == room.RoomId).FirstOrDefault();
+        room_update.DiscountedPrice = room.DiscountedPrice != -1 ?  room.DiscountedPrice : room_update.DiscountedPrice;
+        room_update.Price = room.Price != -1 ?  room.Price : room_update.Price;
+        room_update.HotelId = room.HotelId != -1 ?  room.HotelId : room_update.HotelId;
+        room_update.Adult = room.Adult != -1 ?  room.Adult : room_update.Adult;
+        room_update.Children = room.Children != -1 ?  room.Children : room_update.Children;
+        room_update.Descriptions = room.Descriptions != "" ?  room.Descriptions : room_update.Descriptions;
+        room_update.Image = room.Image != "" ?  room.Image : room_update.Image;
+        _context.SaveChanges();
+    }
+   
+    public void DeleteRoom(int id)
+    {
+        var delete_room = _context.Rooms.Where(r=>r.RoomId == id).FirstOrDefault();
+        _context.Rooms.Remove(delete_room);
+        _context.SaveChanges();
+    }
+    
+    public void DeleteRooms()
+    {
+        var delete_all_room = _context.Rooms.ToList();
+        _context.BulkDelete(delete_all_room); 
+    }
+    
+    #endregion
+    
+    #region Management BookRoom
+    
+    public List<BookRoom> GetBookRooms()
+    {
+        return _context.BookRooms.ToList();
+    }
+
+    public BookRoom GetBookRoom(int id)
+    {  
+        var bookroom = _context.BookRooms.Where(r=>r.Id == id).FirstOrDefault();
+        if (bookroom == null)
+        {
+            return null;
+        }
+        return bookroom;
+    }
+    
+    public async Task SetBookRoom(BookRoom bookRoom)
+    {
+        _context.BookRooms.Add(bookRoom);
+        _context.SaveChanges();
+    }
+
+    public void UpdateBookRoom(BookRoom bookRoom)
+    {
+        var bookRoom_update = _context.BookRooms.Where(b=>b.Id == bookRoom.Id).FirstOrDefault();
+        bookRoom_update.RoomId = bookRoom.RoomId != -1 ?  bookRoom.RoomId : bookRoom_update.RoomId;
+        bookRoom_update.BookFrom = bookRoom.BookFrom != null ?  bookRoom.BookFrom : bookRoom_update.BookFrom;
+        bookRoom_update.BookTo = bookRoom.BookTo != null ?  bookRoom.BookTo : bookRoom_update.BookTo;
+        bookRoom_update.UserId = bookRoom.UserId != -1 ?  bookRoom.UserId : bookRoom_update.UserId;
+        _context.SaveChanges();
+    }
+   
+    public void DeleteBookRoom(int id)
+    {
+        var delete_bookroom = _context.BookRooms.Where(b=>b.Id ==  id).FirstOrDefault();
+        _context.BookRooms.Remove(delete_bookroom);
+        _context.SaveChanges();
+    }
+    
+    public void DeleteBookRooms()
+    {
+        var delete_all_bookroom = _context.BookRooms.ToList();
+        _context.BulkDelete(delete_all_bookroom); 
+    }
+    
+    #endregion
+    
+    #endregion
+
+    #region Helper method to determine MIME type
     private string GetContentType(string path)
     {
         var extension = Path.GetExtension(path).ToLowerInvariant();
@@ -339,9 +620,9 @@ public class CustomerService
         };
     }
 
+    #endregion 
    
-    
-    ////when book room add increment in table city filed visited 
+
     
 }
 

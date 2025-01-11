@@ -5,7 +5,7 @@ namespace FinalProjectTrainingFTS.Models;
 
 public partial class BookRoom
 {
-    public int RoomId { get; set; }
+    public int? RoomId { get; set; }
 
     public int UserId { get; set; }
 
@@ -15,7 +15,6 @@ public partial class BookRoom
 
     public int Id { get; set; }
 
-    public virtual Room Room { get; set; } = null!;
+    public virtual Room? Room { get; set; }
 
-    public virtual User User { get; set; } = null!;
-}
+   }

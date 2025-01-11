@@ -13,6 +13,6 @@ public class SearchRequest
     public int price_max { get; set; } 
     public int star_rate { get; set; } 
     public string amenities { get; set; } 
-    public string imageName { get; set; } 
+ 
     
 }

@@ -65,13 +65,8 @@ public partial class FinalProjectTrainingFtsContext : DbContext
 
             entity.HasOne(d => d.Room).WithMany(p => p.BookRooms)
                 .HasForeignKey(d => d.RoomId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Book Room_Room");
-
-            entity.HasOne(d => d.User).WithMany(p => p.BookRooms)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Book Room_User");
         });
 
         modelBuilder.Entity<City>(entity =>
@@ -101,6 +96,9 @@ public partial class FinalProjectTrainingFtsContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("ID");
+            entity.Property(e => e.Amenities)
+                .HasMaxLength(100)
+                .IsUnicode(false);
             entity.Property(e => e.CityId).HasColumnName("City ID");
             entity.Property(e => e.Descriptions)
                 .HasMaxLength(200)
@@ -109,6 +107,12 @@ public partial class FinalProjectTrainingFtsContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("image");
+            entity.Property(e => e.Latitude)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.Longitude)
+                .HasMaxLength(200)
+                .IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Owner)
                 .HasMaxLength(50)
@@ -117,7 +121,6 @@ public partial class FinalProjectTrainingFtsContext : DbContext
 
             entity.HasOne(d => d.City).WithMany(p => p.Hotels)
                 .HasForeignKey(d => d.CityId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Hotel_City");
         });
 
@@ -131,11 +134,6 @@ public partial class FinalProjectTrainingFtsContext : DbContext
             entity.Property(e => e.Descriptions).HasMaxLength(200);
             entity.Property(e => e.HotelId).HasColumnName("Hotel ID");
             entity.Property(e => e.Image).HasMaxLength(500);
-
-            entity.HasOne(d => d.Hotel).WithMany(p => p.Rooms)
-                .HasForeignKey(d => d.HotelId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Room_Hotel");
         });
 
         modelBuilder.Entity<User>(entity =>
