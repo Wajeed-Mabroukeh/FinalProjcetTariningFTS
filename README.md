@@ -21,22 +21,22 @@ This project is a comprehensive Travel and Accommodation Booking Platform design
 **Entity Update Form**: Edit existing data efficiently.<br>
 
 ### Technical Requirements
-**RESTful APIs**: Built following RESTful principles for scalability and maintainability.
-**Authentication**: Secure JWT-based user authentication and authorization.
-**Error Handling**: Robust error handling to enhance reliability.
-**Validation**: Input validation for all endpoints to ensure data integrity.
-**Unit Testing**: Comprehensive test coverage for critical components.
-**Documentation**: Swagger/OpenAPI integration for API documentation.
+**RESTful APIs**: Built following RESTful principles for scalability and maintainability.<br>
+**Authentication**: Secure JWT-based user authentication and authorization.<br>
+**Error Handling**: Robust error handling to enhance reliability.<br>
+**Validation**: Input validation for all endpoints to ensure data integrity.<br>
+**Unit Testing**: Comprehensive test coverage for critical components.<br>
+**Documentation**: Swagger/OpenAPI integration for API documentation.<br>
 
 ### Project Management
-**Tools Used**: Jira for task tracking and progress management.
-**Workflow**: Agile development methodology to ensure timely delivery and iterative improvements.
+**Tools Used**: Jira for task tracking and progress management.<br>
+**Workflow**: Agile development methodology to ensure timely delivery and iterative improvements.<br>
 
 ### Technologies
-**Backend**: ASP.NET Core Web API
-**Database**: SQL Server(SSMS)
-**Authentication**: JWT
-**Tools**: Postman for testing, Swagger for API documentation
-**Other**: Entity Framework Core for database interaction
+**Backend**: ASP.NET Core Web API<br>
+**Database**: SQL Server(SSMS)<br>
+**Authentication**: JWT<br>
+**Tools**: Postman for testing, Swagger for API documentation<br>
+**Other**: Entity Framework Core for database interaction<br>
 
 ### Installation
