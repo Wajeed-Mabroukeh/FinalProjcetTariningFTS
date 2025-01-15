@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FinalProjectTrainingFTS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ public class ControllerLogin : ControllerBase
 {
 
     private readonly IConfiguration _configuration;
-    private CustomerService.CustomerService entity;
+    private  CustomerService.CustomerService entity;
 
     public ControllerLogin(IConfiguration configuration)
     {
@@ -19,24 +20,16 @@ public class ControllerLogin : ControllerBase
     }
     
     
-    [HttpGet("User")]
-    public Dictionary<string, string> GetLoginU([FromBody] LoginRequest loginRequest)
+    [HttpPost("User")]
+    public  Dictionary<string, string> GetLoginU([FromBody] LoginRequest loginRequest)
     {
         return entity.GetLoginUser(loginRequest.UserName, loginRequest.Password);
     }
     
-    [HttpGet("Admin")]
+    [HttpPost("Admin")]
     public Dictionary<string, string> GetLoginA([FromBody] LoginRequest loginRequest)
     {
         return entity.GetLoginAdmin(loginRequest.UserName, loginRequest.Password);
     }
 }
 
-public class LoginRequest
-{
-    [Required]
-    public string UserName { get; set; }
-    
-    [Required]
-    public string Password { get; set; }
-}

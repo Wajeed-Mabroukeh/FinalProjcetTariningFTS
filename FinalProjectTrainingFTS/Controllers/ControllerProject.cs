@@ -39,10 +39,10 @@ public class ControllerProject : ControllerBase
     }
     
     [Authorize(Roles = "User")]
-    [HttpPut("Updatevisitedhoteluser")] 
-    public void PutUpdateVisitedHotel([FromBody] HotelVisitedRequest request)
+    [HttpPut("UpdateVisitedHotelUser")] 
+    public void UpdateVisitedHotel([FromBody] HotelVisitedRequest request)
     {
-         entity.Updatevisitedhoteluser(request.IdHotelVisited);
+         entity.UpdateVisitedHotelUser(request.IdHotelVisited);
     }
     #endregion
     
@@ -89,7 +89,8 @@ public class ControllerProject : ControllerBase
    
     #region Visual Gallery (Get Image)
     
-    [HttpGet("get-image/{imageName}")]
+    [Authorize(Roles = "User")]
+    [HttpGet("GetImage/{imageName}")]
     public IActionResult GetImage(string imageName)
     {
         return entity.GetImage(imageName);
@@ -98,6 +99,7 @@ public class ControllerProject : ControllerBase
    
     #region Room Availability
     
+    [Authorize(Roles = "User")]
     [HttpGet("RoomAvailability")]
     public List<Room> GetAvailabileRoom(AvailableRequest request)
     {
@@ -106,9 +108,8 @@ public class ControllerProject : ControllerBase
    
     #endregion
     
-    
     #region Get Login User
-    
+    [Authorize(Roles = "User")]
     [HttpGet("User/Login")]
     public User GetLoginUser()
     {
@@ -117,13 +118,15 @@ public class ControllerProject : ControllerBase
     #endregion
    
     #region BookRoom Payment
-   // [Authorize(Roles = "User")]
+    
+    [Authorize(Roles = "User")]
     [HttpPost("BookRoom/Payment")] 
-    public async Task<string> BookRoom_Payment([FromBody] BookRequest request)
+    public async Task<BookResponse> BookRoom_Payment([FromBody] BookRequest request)
     {
         return await entity.BookRoom_Payment(request);
     }
     #endregion
+    
     #endregion
 
     
@@ -131,7 +134,8 @@ public class ControllerProject : ControllerBase
     
     #region Upload Image
 
-    [HttpPost("Upload")]
+    [Authorize(Roles = "Admin")]
+    [HttpPost("Upload/Image")]
     public async Task<string> UploadImage([FromForm] IFormFile imageFile)
     {
         return await entity.upload_image(imageFile);
@@ -141,6 +145,7 @@ public class ControllerProject : ControllerBase
     
     #region Location
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("Location")]
     public async Task SetLocation([FromBody] SetLocation location)
     {
@@ -149,41 +154,64 @@ public class ControllerProject : ControllerBase
 
     #endregion
 
- 
+    #region Add User
+    [Authorize(Roles = "Admin")]
+    [HttpPost("Add/User")]
+    public void SetUser([FromBody] User user)
+    {
+        entity.SetUser(user);
+    }
+    #endregion 
+    
+    #region Add Admin
+    [Authorize(Roles = "Admin")]
+    [HttpPost("Add/Admin")]
+    public void SetAdmin([FromBody] Admin admin)
+    {
+        entity.SetAdmin(admin);
+    }
+    
+
+    #endregion
     
     #region Management Cities API 
     
+    [Authorize(Roles = "Admin")]
     [HttpPost("Create/Cities")]
     public void SetCities([FromBody] City city)
     {
         entity.SetCity(city);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut ("Update/City")]
     public void UpdateCity([FromBody] City city)
     {
         entity.UpdateCity(city);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetCities")]
     public List<City> GetCities()
     {
         return entity.GetCities();
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetCity/{id}")]
     public City GetCity(int id)
     {
         return entity.GetCity(id);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/City/{id}")]
     public void DeleteCity(int id)
     {
         entity.DeleteCity(id);
     }
     
-    
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Cities")]
     public void DeleteCities()
     {
@@ -194,38 +222,42 @@ public class ControllerProject : ControllerBase
     
     #region Management Hotels API 
     
-    
+    [Authorize(Roles = "Admin")]
     [HttpPost("Create/Hotel")]
     public void SetHotel([FromBody] Hotel hotel)
     {
         entity.SetHotel(hotel);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut ("Update/Hotel")]
     public void UpdateHotel([FromBody] Hotel hotel)
     {
         entity.UpdateHotel(hotel);
     }
     
-    [HttpGet("GetHotel")]
+    [Authorize(Roles = "Admin")]
+    [HttpGet("GetHotels")]
     public List<Hotel> GetHotel()
     {
         return entity.GetHotels();
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetHotel/{id}")]
     public Hotel GetHotel(int id)
     {
         return entity.GetHotel(id);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Hotel/{id}")]
     public void DeleteHotel(int id)
     {
         entity.DeleteHotel(id);
     }
     
-    
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Hotels")]
     public void DeleteHotels()
     {
@@ -236,37 +268,42 @@ public class ControllerProject : ControllerBase
     
     #region Management Rooms API 
     
-    
+    [Authorize(Roles = "Admin")]
     [HttpPost("Create/Room")]
     public void SetRoom([FromBody] Room room)
     {
         entity.SetRoom(room);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut ("Update/Room")]
     public void UpdateRoom([FromBody] Room room)
     {
         entity.UpdateRoom(room);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetRoom")]
     public List<Room> GetRoom()
     {
         return entity.GetRooms();
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetRoom/{id}")]
     public Room GetRoom(int id)
     {
         return entity.GetRoom(id);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Room/{id}")]
     public void DeleteRoom(int id)
     {
         entity.DeleteRoom(id);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Rooms")]
     public void DeleteRooms()
     {
@@ -277,37 +314,42 @@ public class ControllerProject : ControllerBase
     
     #region Management Book Rooms API 
     
-    
+    [Authorize(Roles = "Admin")]
     [HttpPost("Create/BookRoom")]
     public void SetBookRoom([FromBody] BookRoom bookroom)
     {
         entity.SetBookRoom(bookroom);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut ("Update/BookRoom")]
     public void UpdateBookRoom([FromBody] BookRoom bookroom)
     {
         entity.UpdateBookRoom(bookroom);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetBookRooms")]
     public List<BookRoom> GetBookRooms()
     {
         return entity.GetBookRooms();
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("GetBookRoom/{id}")]
     public BookRoom GetBokRoom(int id)
     {
         return entity.GetBookRoom(id);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/BookRoom/{id}")]
     public void DeleteBookRoom(int id)
     {
         entity.DeleteBookRoom(id);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/BookRooms")]
     public void DeleteBookRooms()
     {

@@ -12,7 +12,7 @@ public class SearchRequest
     public int price_min { get; set; }
     public int price_max { get; set; } 
     public int star_rate { get; set; } 
-    public string amenities { get; set; } 
+    public string? amenities { get; set; } 
  
     
 }

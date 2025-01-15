@@ -5,6 +5,12 @@ using GoogleMapsApi;
 using GoogleMapsApi.Entities.Geocoding.Request;
 using EFCore.BulkExtensions;
 using FinalProjectTrainingFTS.Models;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using MailKit.Net.Smtp;
+using MimeKit;
+
 
 
 
@@ -12,11 +18,21 @@ namespace FinalProjectTrainingFTS.CustomerService;
 
 public class CustomerService
 {
-    private readonly FinalProjectTrainingFtsContext _context = new FinalProjectTrainingFtsContext();
-    private readonly IConfiguration _configuration;
-    private static User user_in;
+    private  readonly FinalProjectTrainingFtsContext _context = new FinalProjectTrainingFtsContext();
+    private  readonly IConfiguration _configuration;
+    public static User user_in = new User()
+    {
+        UserName = "wajeed",
+        Password = "123",
+        Id =1,
+        VisitedHotels = "20,14"
+    };
     
+    
+    
+
     private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Images");
+    private readonly string _PDFDirectory = Path.Combine(Directory.GetCurrentDirectory(), "PDFReportBooking");
 
     public CustomerService(IConfiguration configuration)
     {
@@ -24,7 +40,7 @@ public class CustomerService
     }
 
     #region User
-    public Dictionary<string, string> GetLoginUser(string inputUsername, string inputPassword)
+    public  Dictionary<string, string> GetLoginUser(string inputUsername, string inputPassword)
     {
         if (string.IsNullOrEmpty(inputUsername) || string.IsNullOrEmpty(inputPassword))
         {
@@ -59,6 +75,7 @@ public class CustomerService
             .Select(h => new FeaturedDealsResponse
             {
                 hotel = h, // Select the entire Hotel object
+                originalPrice = h.Rooms.Min(r =>  r.Price),
                 discountedPrice = h.Rooms.Min(r => r.DiscountedPrice * r.Price / 100.0) // Add calculated discounted price
             })
             .Take(5) // Take the top 5 hotels
@@ -90,7 +107,7 @@ public class CustomerService
      return recentlyVisitedHotels;
     }
 
-    public void Updatevisitedhoteluser(int id_hotel_visited)
+    public void UpdateVisitedHotelUser(int id_hotel_visited)
     {
         string? visited_tag = user_in.VisitedHotels;
         if (visited_tag != null)
@@ -247,17 +264,19 @@ public class CustomerService
         // Get the file's content type
         var contentType = GetContentType(filePath);
         var fileBytes = File.ReadAllBytes(filePath);
-        return new FileContentResult(fileBytes, contentType);
-        // Return the file
         
-
-       // return fileBytes;
+        // Return the file
+        return new FileContentResult(fileBytes, contentType);
+       
     }
 
     public List<Room> GetAvailabileRoom(AvailableRequest request)
     {
-        
-         var  rooms_available = _context.Rooms.Include(r=>r.BookRooms)
+        if (request.bookfrom >= request.bookto)
+        {
+            return null;
+        }
+        var  rooms_available = _context.Rooms.Include(r=>r.BookRooms)
             .Where(r=>r.HotelId == request.id_hotel)
             .Where(r=>r.BookRooms.All(b => 
                                            b.BookTo < request.bookfrom ||
@@ -270,10 +289,10 @@ public class CustomerService
     {
         return user_in;
     }
-
-
-    public async Task<string> BookRoom_Payment(BookRequest request)
+    
+    public async Task<BookResponse> BookRoom_Payment(BookRequest request)
     {
+        var room = GetRoom(request.id_room);
         //payment 
         bool Payment_made = true;
         if (Payment_made)
@@ -291,25 +310,58 @@ public class CustomerService
                     book_room.BookFrom = request.book_from;
                     book_room.BookTo = request.book_to;
                     await SetBookRoom(book_room);
-                    var hotel = _context.Hotels.Include(r => r.Rooms)
+                    
+                    var hotel = _context.Hotels
                         .Where(h => h.Rooms.Any(r => r.RoomId == request.id_room)).FirstOrDefault();
-                    _context.Cities.Where(c => c.Id == hotel.CityId)
-                        .FirstOrDefault().VisitCount++;
+                    var city = GetCity(hotel.CityId);
+                   city.VisitCount++;
                     _context.SaveChanges();
-                    return $"Successfully Book Room that ID :{random_id}";
+                    
+                    var confirmation = new Confirmation
+                    {
+                        BookRoom = book_room,
+                        Room = room,
+                        HotelAddress =$"Country :{city.Country} , PostOffice :{city.PostOffice}",
+                        TotalAmount = (room.Price * room.DiscountedPrice)/100.0
+                    };
+                    string uniqueFileName = $"{random_id}.pdf";
+                    var filePath = Path.Combine(_PDFDirectory, uniqueFileName);
+                    SaveConfirmationAsPdf(confirmation, filePath);
+                    
+                    string paymentStatus = "Paid";
+                    string recipientEmail = "wajeed.mabroukeh@gmail.com";
+                    
+                    SendEmailWithInvoice(recipientEmail, paymentStatus, filePath);
+                    
+                    return new BookResponse()
+                    {
+                        MassegeResulte = $"Successfully Book Room that ID :{random_id}"
+                    };
                 }
-                return "The Book From must be the next day to Book To after the initial booking appointment.!";
+                return new BookResponse()
+                {
+                    MassegeResulte = "The Book From must be the next day to Book To after the initial booking appointment.!"
+                };
             }
             else
             {
-                return "You Already Book This Room!";
+                return new BookResponse()
+                {
+                    MassegeResulte = "You Already Book This Room!"
+                }; 
             }
          
            
         }
-        return "Payment problem, Try Again.";
+        return new BookResponse()
+        {
+            MassegeResulte = "Payment problem, Try Again."
+        }; 
         
     }
+    
+    
+    
     #endregion
     
     #region Admin
@@ -339,6 +391,18 @@ public class CustomerService
 
         return result;
     }
+
+    public void SetUser(User user)
+    {
+        _context.Users.Add(user);
+        _context.SaveChanges();
+    }
+    
+    public void SetAdmin(Admin admin)
+    {
+        _context.Admins.Add(admin);
+        _context.SaveChanges();
+    }
     
     public async Task<string> upload_image (IFormFile imageFile){
         
@@ -361,14 +425,20 @@ public class CustomerService
 
     // Build the full file path
     var filePath = Path.Combine(_imageDirectory, uniqueFileName);
-
+   // try
+   // {
         // Save the file
         using (var stream = new FileStream(filePath, FileMode.Create))
-    {
-        await imageFile.CopyToAsync(stream);
-    }
+        {
+            await imageFile.CopyToAsync(stream);
+        }
+    //}
+    //catch(Exception ex)
+    //{
+      //  return $"An error occurred: {ex.Message}";
+   // }
 
-        return "File uploaded successfully";
+    return "File uploaded successfully";
     }
     
     public   async Task SetLocation( SetLocation location)
@@ -405,7 +475,7 @@ public class CustomerService
         return _context.Cities.ToList();
     }
     
-    public City GetCity(int id)
+    public City GetCity(int? id)
     {  
         var city = _context.Cities.Where(c=>c.Id == id).FirstOrDefault();
         if (city == null)
@@ -502,7 +572,7 @@ public class CustomerService
     {
         var delete_all_hotel = _context.Hotels.ToList();
         _context.BulkDelete(delete_all_hotel); 
-      }
+    }
     
     #endregion
     
@@ -607,7 +677,7 @@ public class CustomerService
     
     #endregion
 
-    #region Helper method to determine MIME type
+    #region Helper method 
     private string GetContentType(string path)
     {
         var extension = Path.GetExtension(path).ToLowerInvariant();
@@ -620,6 +690,78 @@ public class CustomerService
         };
     }
 
+    
+    public static void SaveConfirmationAsPdf(Confirmation confirmation, string filePath)
+    {
+        // Create a PDF writer instance
+        using (PdfWriter writer = new PdfWriter(filePath))
+        {
+            // Create a PDF document
+            using (PdfDocument pdf = new PdfDocument(writer))
+            {
+                Document document = new Document(pdf);
+
+                // Add content to the PDF
+                document.Add(new Paragraph("Confirmation Details"));
+                document.Add(new Paragraph($"ID Book Room: {confirmation.BookRoom.Id}"));
+                document.Add(new Paragraph($"Descriptions Room: {confirmation.Room.Descriptions}"));
+                document.Add(new Paragraph($"Adult: {confirmation.Room.Adult}"));
+                document.Add(new Paragraph($"Children: {confirmation.Room.Children}"));
+                document.Add(new Paragraph($"HotelAddress => {confirmation.HotelAddress}"));
+                document.Add(new Paragraph($"Reservation Date: {confirmation.BookRoom.BookFrom:yyyy-MM-dd HH:mm:ss}"));
+                document.Add(new Paragraph($"Reservation Date: {confirmation.BookRoom.BookTo:yyyy-MM-dd HH:mm:ss}"));
+                document.Add(new Paragraph($"Total Amount: ${confirmation.TotalAmount}"));
+
+                // Close the document
+                document.Close();
+            }
+        }
+    }
+    
+    public static void SendEmailWithInvoice(string recipientEmail, string paymentStatus, string invoiceFilePath)
+    {
+        // Create a new email message
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Your Company", "borak.sabanje@gmail.com"));
+        message.To.Add(new MailboxAddress("User", recipientEmail));
+        message.Subject = "Payment Confirmation and Invoice";
+
+        // Create the email body
+        var bodyBuilder = new BodyBuilder
+        {
+            TextBody = $"Dear Customer,\n\nThank you for your payment. Your payment status is '{paymentStatus}'. Please find your invoice attached.\n\nBest regards,\nYour Company"
+        };
+
+        // Attach the PDF invoice
+        bodyBuilder.Attachments.Add(invoiceFilePath);
+
+        // Set the body
+        message.Body = bodyBuilder.ToMessageBody();
+
+        // Send the email
+        using (var client = new SmtpClient())
+        {
+            try
+            {
+                // Connect to the SMTP server
+                client.Connect("smtp.gmail.com", 587, false);
+
+                // Authenticate (use your credentials here)
+                client.Authenticate("borak.sabanje@gmail.com", "571833");
+
+                // Send the message
+                client.Send(message);
+
+                // Disconnect
+                client.Disconnect(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+            }
+        }
+    }
+    
     #endregion 
    
 

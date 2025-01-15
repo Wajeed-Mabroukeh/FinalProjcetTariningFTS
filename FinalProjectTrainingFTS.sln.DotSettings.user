@@ -1,0 +1,11 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cwajed_005CRiderProjects_005CFinalProjectTrainingFTS_005CFinalProjectTrainingFTSTest_002ETest_005CFeatures_0020API_0020User_0020Test_002Ecs/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cwajed_005CRiderProjects_005CFinalProjectTrainingFTS_005CFinalProjectTrainingFTS_005CModels_0020Project_005CLoginRequest_002Ecs/@EntryIndexedValue">True</s:Boolean>
+	
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ad801d3f_002D5a63_002D4898_002Da7b7_002Df64382016395/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;FinalProjectTrainingFTSTest.Test&amp;gt; #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\wajed\RiderProjects\FinalProjectTrainingFTS\FinalProjectTrainingFTSTest.Test" Presentation="&amp;lt;FinalProjectTrainingFTSTest.Test&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	
+	
+	</wpf:ResourceDictionary>
