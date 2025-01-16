@@ -1,6 +1,6 @@
 namespace FinalProjectTrainingFTS.Models;
 
-public class BookResponse
+public class Response
 {
     public string MassegeResulte { get; set; }
 

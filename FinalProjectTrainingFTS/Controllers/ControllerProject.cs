@@ -121,7 +121,7 @@ public class ControllerProject : ControllerBase
     
     [Authorize(Roles = "User")]
     [HttpPost("BookRoom/Payment")] 
-    public async Task<BookResponse> BookRoom_Payment([FromBody] BookRequest request)
+    public async Task<Response> BookRoom_Payment([FromBody] BookRequest request)
     {
         return await entity.BookRoom_Payment(request);
     }
@@ -136,7 +136,7 @@ public class ControllerProject : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost("Upload/Image")]
-    public async Task<string> UploadImage([FromForm] IFormFile imageFile)
+    public async Task<Response> UploadImage([FromForm] IFormFile imageFile)
     {
         return await entity.upload_image(imageFile);
     }

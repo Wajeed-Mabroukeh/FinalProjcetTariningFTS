@@ -290,7 +290,7 @@ public class CustomerService
         return user_in;
     }
     
-    public async Task<BookResponse> BookRoom_Payment(BookRequest request)
+    public async Task<Response> BookRoom_Payment(BookRequest request)
     {
         var room = GetRoom(request.id_room);
         //payment 
@@ -333,19 +333,19 @@ public class CustomerService
                     
                     SendEmailWithInvoice(recipientEmail, paymentStatus, filePath);
                     
-                    return new BookResponse()
+                    return new Response()
                     {
                         MassegeResulte = $"Successfully Book Room that ID :{random_id}"
                     };
                 }
-                return new BookResponse()
+                return new Response()
                 {
                     MassegeResulte = "The Book From must be the next day to Book To after the initial booking appointment.!"
                 };
             }
             else
             {
-                return new BookResponse()
+                return new Response()
                 {
                     MassegeResulte = "You Already Book This Room!"
                 }; 
@@ -353,7 +353,7 @@ public class CustomerService
          
            
         }
-        return new BookResponse()
+        return new Response()
         {
             MassegeResulte = "Payment problem, Try Again."
         }; 
@@ -394,8 +394,17 @@ public class CustomerService
 
     public void SetUser(User user)
     {
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        try
+        {
+            _context.Users.Add(user);
+            _context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
     }
     
     public void SetAdmin(Admin admin)
@@ -404,41 +413,57 @@ public class CustomerService
         _context.SaveChanges();
     }
     
-    public async Task<string> upload_image (IFormFile imageFile){
-        
-    if (imageFile == null || imageFile.Length == 0)
-    { 
-        return   "No file uploaded or file is empty.";
-    }
+    public async Task<Response> upload_image (IFormFile imageFile){
 
-    // Validate the file type
-    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-    var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-
-        if (!allowedExtensions.Contains(fileExtension))
-    {
-        return  "Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.";
-    }
-
-    // Generate a unique file name to avoid overwriting existing files
-    var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
-
-    // Build the full file path
-    var filePath = Path.Combine(_imageDirectory, uniqueFileName);
-   // try
-   // {
-        // Save the file
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        try
         {
-            await imageFile.CopyToAsync(stream);
-        }
-    //}
-    //catch(Exception ex)
-    //{
-      //  return $"An error occurred: {ex.Message}";
-   // }
+            if (imageFile == null || imageFile.Length == 0)
+            {
+                return new Response()
+                {
+                    MassegeResulte = "No file uploaded or file is empty."
+                };
+            }
 
-    return "File uploaded successfully";
+            // Validate the file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+
+                return new Response()
+                {
+                    MassegeResulte = "Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed."
+                };
+
+            }
+
+            // Generate a unique file name to avoid overwriting existing files
+            var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
+
+            // Build the full file path
+            var filePath = Path.Combine(_imageDirectory, uniqueFileName);
+           
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+            
+        }
+        catch (Exception e)
+        {
+            return new Response()
+            {
+                MassegeResulte = "Error"
+            };
+        }
+
+        return new Response()
+       {
+           MassegeResulte = "File uploaded successfully"
+       };
     }
     
     public   async Task SetLocation( SetLocation location)
