@@ -2,6 +2,8 @@ using Azure.Core;
 using FinalProjectTrainingFTS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+using Stripe.Checkout;
 
 namespace FinalProjectTrainingFTS.Controllers;
 
@@ -124,6 +126,56 @@ public class ControllerProject : ControllerBase
     public async Task<Response> BookRoom_Payment([FromBody] BookRequest request)
     {
         return await entity.BookRoom_Payment(request);
+    }
+    #endregion
+    
+    #region CreateCheckoutSession
+    [HttpPost("create-checkout-session")]
+    public Dictionary<string,string> CreateCheckoutSession([FromBody]CreateSessionRequest request)
+    {
+        return entity.CreateCheckoutSession(request);
+    }
+    #endregion
+
+    #region Payment Stripe Webhook
+    
+    [HttpPost("payment/stripe-webhook")]
+    public async Task<Dictionary<string,string>> Webhook()
+    {
+        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+       
+        try
+        {
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                Request.Headers["Stripe-Signature"],
+                _configuration["Stripe:WebhookSecret"]
+            );
+           
+            if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
+            {
+                var session = stripeEvent.Data.Object as Session;
+               
+                Console.WriteLine(session.Id);
+                return new Dictionary<string, string>
+                {
+                    {"Url",session.Url}
+                };
+            }
+            return new Dictionary<string, string>
+            {
+                {"Error","Error"}
+            };
+          
+        }
+        catch (StripeException ex)
+        {
+            return new Dictionary<string, string>
+            {
+                {"Error",ex.StripeError.Error}
+            };
+        }
+       
     }
     #endregion
     

@@ -10,7 +10,9 @@ using iText.Layout;
 using iText.Layout.Element;
 using MailKit.Net.Smtp;
 using MimeKit;
-
+using Stripe;
+using Stripe.Checkout;
+using File = System.IO.File;
 
 
 
@@ -787,6 +789,57 @@ public class CustomerService
         }
     }
     
+    
+     public Dictionary<string, string>CreateCheckoutSession(CreateSessionRequest request)
+    { 
+        StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
+
+
+        var options = new SessionCreateOptions
+
+        {
+            PaymentMethodTypes = new List<string> { "card" },
+            LineItems = new List<SessionLineItemOptions>
+            {
+                new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        Currency = "usd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            //Name = _context.Hotels.Include(h => h.Rooms)
+                              //  .Where(h => h.Rooms.Any(r => r.RoomId == request.RoomlId)).FirstOrDefault().Name,
+                            Metadata =
+                            {
+                                { "Room ID:", request.RoomlId + "" },
+                               // { "User ID:", user_in.Id + "" },
+                                { "Book From:", request.Book_From + "" },
+                                { "Book To:", request.Book_To + "" }
+                            },
+                        },
+                        UnitAmount =(long) 11 *100
+                            //(long)((_context.Rooms.Where(r => r.RoomId == request.RoomlId).FirstOrDefault().Price *
+                                //    _context.Rooms.Where(r => r.RoomId == request.RoomlId).FirstOrDefault()
+                                   //     .DiscountedPrice) * 100), // Convert to cents
+                    },
+                    Quantity = 1,
+                },
+            },
+            Mode = "payment",
+            SuccessUrl = "http://localhost:5000/api/BookRoom/Payment1111",
+            CancelUrl = "http://localhost:5000/api/BookRoom/Payment11",
+        };
+        
+        var service = new SessionService();
+        Session session = service.Create(options);
+
+        return  new Dictionary<string,string> {
+                {"ID", session.Id},
+                {"Url", session.Url}
+        };
+    }
+     
     #endregion 
    
 
