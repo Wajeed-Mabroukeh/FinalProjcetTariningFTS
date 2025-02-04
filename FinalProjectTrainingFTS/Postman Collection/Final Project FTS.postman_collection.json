@@ -1,0 +1,1233 @@
+{
+	"info": {
+		"_postman_id": "a977b2e5-20b7-479e-bf34-59d10acfab91",
+		"name": "Final Project FTS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24685485"
+	},
+	"item": [
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "City",
+					"item": [
+						{
+							"name": "Create City",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n{\r\n    \"Name\": \"nabluss\",\r\n    \"Country\" : \"palestine\",\r\n    \"PostOffice\" : 125,\r\n    \"Id\" : 12,\r\n    \"VisitCount\" : 0,\r\n    \"Image\":\"2.png\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Create/Cities",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Create",
+										"Cities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Cities",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/Cities",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"Cities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete City",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/City/123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"City",
+										"123"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update City",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Name\": \"nablus\",\r\n    \"Country\" : \"palestine\",\r\n    \"PostOffice\" : 125,\r\n    \"Id\" : 10,\r\n    \"VisitCount\" : 2,\r\n    \"Image\":\"1.png\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Update/City",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Update",
+										"City"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Cities",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetCities",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetCities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetCity",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetCity/10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetCity",
+										"10"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Hotel",
+					"item": [
+						{
+							"name": "Get Hotels",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetHotels",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetHotels"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Hotel",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"malke\",\r\n        \"starRate\": 4,\r\n        \"owner\": \"mohammed\",\r\n        \"id\": 1115,\r\n        \"cityId\": 16,\r\n        \"image\": \"fhb\",\r\n        \"descriptions\": \"fgaaa\",\r\n        \"amenities\": \"luxury\",\r\n        \"latitude\": \"120n\",\r\n        \"longitude\": \"fdf4\",\r\n        \"city\": null,\r\n        \"rooms\": []\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Create/Hotel",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Create",
+										"Hotel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Hotel",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"name\": \"boos\",\r\n        \"starRate\": 4,\r\n        \"owner\": \"mohammed\",\r\n        \"id\": 555,\r\n        \"cityId\": 16,\r\n        \"image\": \"fhb\",\r\n        \"descriptions\": \"food\",\r\n        \"amenities\": \"luxury\",\r\n        \"latitude\": \"\",\r\n        \"longitude\": \"\",\r\n        \"city\": null,\r\n        \"rooms\": []\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Update/Hotel",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Update",
+										"Hotel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Hotel",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetHotel/10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetHotel",
+										"10"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Hotel",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/Hotel/1115",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"Hotel",
+										"1115"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Hotels",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/Hotels",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"Hotels"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Room",
+					"item": [
+						{
+							"name": "Get Rooms",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetRoom",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetRoom"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Room",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"roomId\": 510,\r\n        \"adult\": 3,\r\n        \"children\": 1,\r\n        \"hotelId\": 14,\r\n        \"image\": \"1.jpg\",\r\n        \"descriptions\": \"lwdkm\",\r\n        \"price\": 20,\r\n        \"discountedPrice\": 30,\r\n        \"bookRooms\": []\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Create/Room",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Create",
+										"Room"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Room",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n        \"roomId\": 455,\r\n        \"adult\": 2,\r\n        \"children\": 1,\r\n        \"hotelId\": 10,\r\n        \"image\": \"wdssd\",\r\n        \"descriptions\": \"lwdkm\",\r\n        \"price\": 2000,\r\n        \"discountedPrice\": 20,\r\n        \"bookRooms\": []\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Update/Room",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Update",
+										"Room"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Room",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetRoom/510",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetRoom",
+										"510"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Room",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/Room/510",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"Room",
+										"510"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Rooms",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/Rooms",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"Rooms"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Book Room",
+					"item": [
+						{
+							"name": "Get Book Rooms",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetBookRooms",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetBookRooms"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Book Room",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"roomId\": 455,\r\n        \"userId\": 1,\r\n        \"bookFrom\": \"2025-01-01T00:00:00\",\r\n        \"bookTo\": \"2025-02-02T00:00:00\",\r\n        \"id\": 300,\r\n        \"room\": null\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Create/BookRoom",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Create",
+										"BookRoom"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Book Room",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n        \"roomId\": 455,\r\n        \"userId\": 1,\r\n        \"bookFrom\": \"2025-01-04T00:00:00\",\r\n        \"bookTo\": \"2025-02-05T00:00:00\",\r\n        \"id\": 300,\r\n        \"room\": null,\r\n         \"User\" : {\r\n            \"UserName\" : \"ahmad55\",\r\n            \"Password\": \"88h\",\r\n            \"Id\" : 5,\r\n            \"VisitedHotels\" : \"\"\r\n         }\r\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/Update/BookRoom",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Update",
+										"BookRoom"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Book Room",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/GetBookRoom/300",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"GetBookRoom",
+										"300"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book Room",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/BookRoom/300",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"BookRoom",
+										"300"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book Rooms",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/Delete/BookRooms",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"Delete",
+										"BookRooms"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"if (jsonData) {\r",
+									"    pm.globals.set(\"token\", \"Bearer \" + jsonData.access_token);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"UserName\": \"ibrahim\",\r\n   \"Password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/Login/Admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"Login",
+								"Admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "imageFile",
+									"type": "file",
+									"src": "postman-cloud:///1efcdcf0-c346-4760-88fe-826d1ed65bfc"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/Upload/Image",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"Upload",
+								"Image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Location",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_hotel\" : 10,\r\n    \"Address\":\"1600 Amphitheatre Parkway, Mountain View, CA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/Location",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"Location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n        \"UserName\" : \"ahmad\",\r\n        \"Password\": \"88h\",\r\n        \"Id\" : 2,\r\n        \"VisitedHotels\" : \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/Add/User",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"Add",
+								"User"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"UserName\" : \"ww\",\r\n        \"Password\" : \"7\",\r\n        \"Id\" : 3\r\n       \r\n    }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/Add/Admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"Add",
+								"Admin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Updatevisitedhoteluser",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdHotelVisited\" : 14\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/UpdateVisitedHotelUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"UpdateVisitedHotelUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"if (jsonData) {\r",
+									"    pm.globals.set(\"token\", \"Bearer \" + jsonData.access_token);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"UserName\": \"wajeed\",\r\n   \"Password\": \"123\"\r\n   \r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/Login/User",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"Login",
+								"User"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FeaturedDeals",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "RecentlyVisitedHotels",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/RecentlyVisitedHotels",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"RecentlyVisitedHotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TrendingDestinationHighlights",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/TrendingDestinationHighlights",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"TrendingDestinationHighlights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Hotel",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Query\" : \"nablus\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/SearchResultsHotel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"SearchResultsHotel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SearchResultsPriceRange",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"price_min\" :10,\r\n    \"price_max\" : 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/SearchResultsPriceRange",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"SearchResultsPriceRange"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SearchResultsStarAmenities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amenities\": \"luxury\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/SearchResultsStarAmenities",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"SearchResultsStarAmenities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SearchResultsStarRating",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"star_rate\" : 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/SearchResultsStarRating",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"SearchResultsStarRating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetImage",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/GetImage/2.png",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"GetImage",
+								"2.png"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RoomAvailability",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_hotel\" : 14,\r\n    \"bookfrom\" : \"2025-01-04\",\r\n    \"bookto\" : \"2025-01-05\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/RoomAvailability",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"RoomAvailability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/User/Login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"User",
+								"Login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Room Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_room\" : 455,\r\n    \"book_from\" : \"2025-04-18T00:00:00\",\r\n    \"book_to\" : \"2025-04-19T00:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/BookRoom/Payment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"BookRoom",
+								"Payment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/create-checkout-session",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"create-checkout-session"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
