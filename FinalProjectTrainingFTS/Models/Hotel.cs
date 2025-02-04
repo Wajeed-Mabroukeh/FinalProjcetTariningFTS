@@ -26,6 +26,6 @@ public partial class Hotel
     public string? Longitude { get; set; }
 
     public virtual City? City { get; set; }
-    
+
     public virtual ICollection<Room> Rooms { get; } = new List<Room>();
 }

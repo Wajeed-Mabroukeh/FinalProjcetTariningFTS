@@ -16,7 +16,7 @@ public class Features_API_Admin_Test : IClassFixture<WebApplicationFactory<Final
     
     public static IEnumerable<object[]> token_jwt = new List<object[]>
     {
-        new object[] { "access_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiaWJyYWhpbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzM2OTUwNjMyLCJpc3MiOiJmaW5hbHByb2plY3R0cmFpbmluZ2Z0cyIsImF1ZCI6IldhamVlZCJ9.gzJpNnpXyUzOiBHnZErOGMiXz_A4_sCtSVk7NYS7gIw" }
+        new object[] { "access_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiaWJyYWhpbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzM4NjY4NjMzLCJpc3MiOiJmaW5hbHByb2plY3R0cmFpbmluZ2Z0cyIsImF1ZCI6IldhamVlZCJ9.F4xNA69mes8vU6_S-4z4rAdwG-t1ESJjmAXlClK3YIA" }
     };
     
     public Features_API_Admin_Test(WebApplicationFactory<FinalProjectTrainingFTS.Controllers.ControllerProject> factory)
@@ -560,7 +560,13 @@ public class Features_API_Admin_Test : IClassFixture<WebApplicationFactory<Final
             BookFrom = Convert.ToDateTime("2025-09-01T00:00:00"),
             BookTo = Convert.ToDateTime("2025-09-02T00:00:00"),
             Id = 999,
-            Room = null
+            Room = null,
+            User = new User(){
+            UserName = "ahmad55",
+            Password = "88h",
+            Id = 5,
+            VisitedHotels = ""
+        }
         };
         
         var content = new StringContent(
@@ -616,7 +622,13 @@ public class Features_API_Admin_Test : IClassFixture<WebApplicationFactory<Final
             BookFrom = Convert.ToDateTime("2025-09-01T00:00:00"),
             BookTo = Convert.ToDateTime("2025-09-06T00:00:00"),
             Id = 999,
-            Room = null
+            Room = null,
+            User = new User(){
+                UserName = "ahmad55",
+                Password = "88h",
+                Id = 5,
+                VisitedHotels = ""
+            }
         };
         
         var content = new StringContent(

@@ -20,6 +20,8 @@ public partial class FinalProjectTrainingFtsContext : DbContext
 
     public virtual DbSet<BookRoom> BookRooms { get; set; }
 
+    public virtual DbSet<CheckPayment> CheckPayments { get; set; }
+
     public virtual DbSet<City> Cities { get; set; }
 
     public virtual DbSet<Hotel> Hotels { get; set; }
@@ -65,8 +67,41 @@ public partial class FinalProjectTrainingFtsContext : DbContext
 
             entity.HasOne(d => d.Room).WithMany(p => p.BookRooms)
                 .HasForeignKey(d => d.RoomId)
-                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Book Room_Room");
+
+            entity.HasOne(d => d.User).WithMany(p => p.BookRooms)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Book Room_User");
+        });
+
+        modelBuilder.Entity<CheckPayment>(entity =>
+        {
+            entity.HasKey(e => e.PaymentId);
+
+            entity.ToTable("Check Payment");
+
+            entity.Property(e => e.PaymentId)
+                .ValueGeneratedNever()
+                .HasColumnName("Payment Id");
+            entity.Property(e => e.BookFrom)
+                .HasColumnType("date")
+                .HasColumnName("Book From");
+            entity.Property(e => e.BookTo)
+                .HasColumnType("date")
+                .HasColumnName("Book To");
+            entity.Property(e => e.RoomId).HasColumnName("Room Id");
+            entity.Property(e => e.UserId).HasColumnName("User Id");
+
+            entity.HasOne(d => d.Room).WithMany(p => p.CheckPayments)
+                .HasForeignKey(d => d.RoomId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Check Payment_Room");
+
+            entity.HasOne(d => d.User).WithMany(p => p.CheckPayments)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Check Payment_User");
         });
 
         modelBuilder.Entity<City>(entity =>
@@ -134,6 +169,11 @@ public partial class FinalProjectTrainingFtsContext : DbContext
             entity.Property(e => e.Descriptions).HasMaxLength(200);
             entity.Property(e => e.HotelId).HasColumnName("Hotel ID");
             entity.Property(e => e.Image).HasMaxLength(500);
+
+            entity.HasOne(d => d.Hotel).WithMany(p => p.Rooms)
+                .HasForeignKey(d => d.HotelId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Room_Hotel");
         });
 
         modelBuilder.Entity<User>(entity =>

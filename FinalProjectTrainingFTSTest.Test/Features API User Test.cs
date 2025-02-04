@@ -16,7 +16,7 @@ public class Features_API_User_Test : IClassFixture<WebApplicationFactory<FinalP
    
     public static IEnumerable<object[]> token_jwt = new List<object[]>
     {
-        new object[] { "access_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoid2FqZWVkIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTczNjk0ODIwOSwiaXNzIjoiZmluYWxwcm9qZWN0dHJhaW5pbmdmdHMiLCJhdWQiOiJXYWplZWQifQ.XSJI1taQGqNiEGJ-Jl_aLHseJOhMTakHNJxE_ZKXnYA" }
+        new object[] { "access_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoid2FqZWVkIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTczODUxNjM0MCwiaXNzIjoiZmluYWxwcm9qZWN0dHJhaW5pbmdmdHMiLCJhdWQiOiJXYWplZWQifQ.Lr2QXCKC9VuGrb_IK7Inh6MVVin-vy7ALa-S9KoN8d0" }
     };
 
     public Features_API_User_Test(WebApplicationFactory<FinalProjectTrainingFTS.Controllers.ControllerProject> factory)
@@ -378,6 +378,46 @@ public class Features_API_User_Test : IClassFixture<WebApplicationFactory<FinalP
     }
     #endregion
     
+    #region Create Checkout Session
+
+    [Theory]
+    [MemberData(nameof(token_jwt))]
+    public async Task CreateCheckoutSession(string key,string token)
+    {
+        
+        //Arrange
+        var createSessionRequest = new CreateSessionRequest()
+        {
+            RoomlId = 455,
+            Book_From = Convert.ToDateTime("2025-07-02"),
+            Book_To = Convert.ToDateTime("2025-07-04"),
+        };
+        var content = new StringContent(
+            JsonSerializer.Serialize(createSessionRequest), 
+            Encoding.UTF8, 
+            "application/json"
+        );
+        
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/create-checkout-session");
+        
+        //Authentication with Token Jwt
+        _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        
+        //Arrange
+        // Add the content to the request body
+        request.Content = content;
+
+        // Send the request
+        var response = await _client.SendAsync(request);
+        //Act
+        response.EnsureSuccessStatusCode(); // Status code 200-299
+        var jsonString = await response.Content.ReadAsStringAsync();
+        var data = JsonSerializer.Deserialize<Dictionary<string,String>>(jsonString);
+        
+        //Assert
+        Assert.NotNull(data);
+    }
+    #endregion
     
     #endregion
 }

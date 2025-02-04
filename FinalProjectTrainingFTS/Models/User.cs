@@ -12,4 +12,8 @@ public partial class User
     public int Id { get; set; }
 
     public string? VisitedHotels { get; set; }
+
+    public virtual ICollection<BookRoom> BookRooms { get; } = new List<BookRoom>();
+
+    public virtual ICollection<CheckPayment> CheckPayments { get; } = new List<CheckPayment>();
 }

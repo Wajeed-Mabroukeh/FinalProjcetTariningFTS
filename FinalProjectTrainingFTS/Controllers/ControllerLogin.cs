@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FinalProjectTrainingFTS.Models;
+using FinalProjectTrainingFTS.ModelsProject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,13 +24,13 @@ public class ControllerLogin : ControllerBase
     [HttpPost("User")]
     public  Dictionary<string, string> GetLoginU([FromBody] LoginRequest loginRequest)
     {
-        return entity.GetLoginUser(loginRequest.UserName, loginRequest.Password);
+        return entity.GetLoginUser(loginRequest.UserName, loginRequest.Password).Value;
     }
     
     [HttpPost("Admin")]
     public Dictionary<string, string> GetLoginA([FromBody] LoginRequest loginRequest)
     {
-        return entity.GetLoginAdmin(loginRequest.UserName, loginRequest.Password);
+        return entity.GetLoginAdmin(loginRequest.UserName, loginRequest.Password).Value;
     }
 }
 

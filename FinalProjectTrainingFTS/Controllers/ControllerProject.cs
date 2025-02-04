@@ -1,5 +1,6 @@
 using Azure.Core;
 using FinalProjectTrainingFTS.Models;
+using FinalProjectTrainingFTS.ModelsProject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -28,7 +29,7 @@ public class ControllerProject : ControllerBase
     [HttpGet("FeaturedDeals")] 
     public List<FeaturedDealsResponse> GetFeaturedDealsHotels()
     {
-        return entity.GetFeaturedDealsHotels();
+        return entity.GetFeaturedDealsHotels().Value;
     }
     #endregion
    
@@ -37,14 +38,14 @@ public class ControllerProject : ControllerBase
     [HttpGet("RecentlyVisitedHotels")] 
     public List<Hotel> GetRecentlyVisitedHotels()
     {
-        return entity.GetRecentlyVisitedHotels();
+        return entity.GetRecentlyVisitedHotels().Value;
     }
     
     [Authorize(Roles = "User")]
     [HttpPut("UpdateVisitedHotelUser")] 
-    public void UpdateVisitedHotel([FromBody] HotelVisitedRequest request)
+    public Response UpdateVisitedHotel([FromBody] HotelVisitedRequest request)
     {
-         entity.UpdateVisitedHotelUser(request.IdHotelVisited);
+         return entity.UpdateVisitedHotelUser(request.IdHotelVisited).Value;
     }
     #endregion
     
@@ -53,7 +54,7 @@ public class ControllerProject : ControllerBase
    [HttpGet("TrendingDestinationHighlights")] 
    public List<City> TrendingDestinationHighlights()
    {
-       return entity.GetTrendingDestinationHighlights();
+       return entity.GetTrendingDestinationHighlights().Value;
    }
     #endregion
     
@@ -63,28 +64,28 @@ public class ControllerProject : ControllerBase
     [HttpGet("SearchResultsHotel")] 
     public List<Hotel> GetSearchHotels([FromBody] SearchRequest request)
     {
-        return entity.SearchHotels(request);
+        return entity.SearchHotels(request).Value;
     }
     
     [Authorize(Roles = "User")]
     [HttpGet("SearchResultsPriceRange")] 
     public List<Hotel> SearchResultsPriceRange([FromBody] SearchRequest request)
     {
-        return entity.GetSearchResultsPriceRange(request);
+        return entity.GetSearchResultsPriceRange(request).Value;
     }
     
     [Authorize(Roles = "User")]
     [HttpGet("SearchResultsStarAmenities")] 
     public List<Hotel> SearchResultsStarAmenities([FromBody] SearchRequest request)
     {
-        return entity.GetSearchResultsStarAmenities(request);
+        return entity.GetSearchResultsStarAmenities(request).Value;
     }
     
     [Authorize(Roles = "User")]
     [HttpGet("SearchResultsStarRating")] 
     public List<Hotel> SearchResultsStarRating([FromBody] SearchRequest request)
     {
-        return entity.GetSearchResultsStarRating(request);
+        return entity.GetSearchResultsStarRating(request).Value;
     }
     
     #endregion
@@ -95,7 +96,7 @@ public class ControllerProject : ControllerBase
     [HttpGet("GetImage/{imageName}")]
     public IActionResult GetImage(string imageName)
     {
-        return entity.GetImage(imageName);
+        return entity.GetImage(imageName).Value;
     }
     #endregion
    
@@ -105,7 +106,7 @@ public class ControllerProject : ControllerBase
     [HttpGet("RoomAvailability")]
     public List<Room> GetAvailabileRoom(AvailableRequest request)
     {
-        return entity.GetAvailabileRoom(request);
+        return entity.GetAvailabileRoom(request).Value;
     }
    
     #endregion
@@ -115,7 +116,7 @@ public class ControllerProject : ControllerBase
     [HttpGet("User/Login")]
     public User GetLoginUser()
     {
-        return entity.GetLoginUser();
+        return entity.GetLoginUser().Value;
     }
     #endregion
    
@@ -125,22 +126,23 @@ public class ControllerProject : ControllerBase
     [HttpPost("BookRoom/Payment")] 
     public async Task<Response> BookRoom_Payment([FromBody] BookRequest request)
     {
-        return await entity.BookRoom_Payment(request);
+        return  entity.BookRoom_Payment(request).Result.Value;
     }
     #endregion
     
     #region CreateCheckoutSession
+    [Authorize(Roles = "User")]
     [HttpPost("create-checkout-session")]
     public Dictionary<string,string> CreateCheckoutSession([FromBody]CreateSessionRequest request)
     {
-        return entity.CreateCheckoutSession(request);
+        return entity.CreateCheckoutSession(request).Value;
     }
     #endregion
-
+    
     #region Payment Stripe Webhook
     
     [HttpPost("payment/stripe-webhook")]
-    public async Task<Dictionary<string,string>> Webhook()
+    public async Task<Result<string>> Webhook()
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
        
@@ -151,29 +153,37 @@ public class ControllerProject : ControllerBase
                 Request.Headers["Stripe-Signature"],
                 _configuration["Stripe:WebhookSecret"]
             );
-           
+
             if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
             {
                 var session = stripeEvent.Data.Object as Session;
-               
+
                 Console.WriteLine(session.Id);
-                return new Dictionary<string, string>
+                var checkpayment = entity.GetCheckPayment(session.Id);
+                if (checkpayment != null)
                 {
-                    {"Url",session.Url}
-                };
+                    var bookroom = new BookRequest()
+                    {
+                        id_room = checkpayment.RoomId,
+                        book_from = checkpayment.BookFrom,
+                        book_to = checkpayment.BookTo,
+                        user_id = checkpayment.UserId,
+                        payment_id = checkpayment.PaymentId
+                    };
+                    entity.BookRoom_Payment(bookroom);
+
+
+                    return Result<string>.Success(session.Url);
+                       
+                }
             }
-            return new Dictionary<string, string>
-            {
-                {"Error","Error"}
-            };
+           
+            return Result<string>.Failure("Error" , 1000);
           
         }
         catch (StripeException ex)
         {
-            return new Dictionary<string, string>
-            {
-                {"Error",ex.StripeError.Error}
-            };
+            return Result<string>.Failure(ex.StripeError.Error  , 1001);
         }
        
     }
@@ -190,7 +200,7 @@ public class ControllerProject : ControllerBase
     [HttpPost("Upload/Image")]
     public async Task<Response> UploadImage([FromForm] IFormFile imageFile)
     {
-        return await entity.upload_image(imageFile);
+        return  entity.upload_image(imageFile).Result.Value;
     }
 
     #endregion
@@ -199,9 +209,9 @@ public class ControllerProject : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("Location")]
-    public async Task SetLocation([FromBody] SetLocation location)
+    public async Task<Response> SetLocation([FromBody] SetLocation location)
     {
-         await entity.SetLocation(location);
+         return entity.SetLocation(location).Result.Value;
     }
 
     #endregion
@@ -209,18 +219,18 @@ public class ControllerProject : ControllerBase
     #region Add User
     [Authorize(Roles = "Admin")]
     [HttpPost("Add/User")]
-    public void SetUser([FromBody] User user)
+    public Response SetUser([FromBody] User user)
     {
-        entity.SetUser(user);
+       return entity.SetUser(user).Value;
     }
     #endregion 
     
     #region Add Admin
     [Authorize(Roles = "Admin")]
     [HttpPost("Add/Admin")]
-    public void SetAdmin([FromBody] Admin admin)
+    public Response SetAdmin([FromBody] Admin admin)
     {
-        entity.SetAdmin(admin);
+        return entity.SetAdmin(admin).Value;
     }
     
 
@@ -230,44 +240,44 @@ public class ControllerProject : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost("Create/Cities")]
-    public void SetCities([FromBody] City city)
+    public Response SetCities([FromBody] City city)
     {
-        entity.SetCity(city);
+        return entity.SetCity(city).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpPut ("Update/City")]
-    public void UpdateCity([FromBody] City city)
+    public Response UpdateCity([FromBody] City city)
     {
-        entity.UpdateCity(city);
+        return entity.UpdateCity(city).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetCities")]
     public List<City> GetCities()
     {
-        return entity.GetCities();
+        return entity.GetCities().Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetCity/{id}")]
     public City GetCity(int id)
     {
-        return entity.GetCity(id);
+        return entity.GetCity(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/City/{id}")]
-    public void DeleteCity(int id)
+    public Response DeleteCity(int id)
     {
-        entity.DeleteCity(id);
+        return entity.DeleteCity(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Cities")]
-    public void DeleteCities()
+    public Response DeleteCities()
     {
-         entity.DeleteCities();
+         return entity.DeleteCities().Value;
     }
     
     #endregion
@@ -276,44 +286,44 @@ public class ControllerProject : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost("Create/Hotel")]
-    public void SetHotel([FromBody] Hotel hotel)
+    public Response SetHotel([FromBody] Hotel hotel)
     {
-        entity.SetHotel(hotel);
+        return entity.SetHotel(hotel).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpPut ("Update/Hotel")]
-    public void UpdateHotel([FromBody] Hotel hotel)
+    public Response UpdateHotel([FromBody] Hotel hotel)
     {
-        entity.UpdateHotel(hotel);
+        return entity.UpdateHotel(hotel).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetHotels")]
     public List<Hotel> GetHotel()
     {
-        return entity.GetHotels();
+        return entity.GetHotels().Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetHotel/{id}")]
     public Hotel GetHotel(int id)
     {
-        return entity.GetHotel(id);
+        return entity.GetHotel(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Hotel/{id}")]
-    public void DeleteHotel(int id)
+    public Response DeleteHotel(int id)
     {
-        entity.DeleteHotel(id);
+        return entity.DeleteHotel(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Hotels")]
-    public void DeleteHotels()
+    public Response DeleteHotels()
     {
-        entity.DeleteHotels();
+       return entity.DeleteHotels().Value;
     }
     
     #endregion
@@ -322,44 +332,44 @@ public class ControllerProject : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost("Create/Room")]
-    public void SetRoom([FromBody] Room room)
+    public Response SetRoom([FromBody] Room room)
     {
-        entity.SetRoom(room);
+        return entity.SetRoom(room).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpPut ("Update/Room")]
-    public void UpdateRoom([FromBody] Room room)
+    public Response UpdateRoom([FromBody] Room room)
     {
-        entity.UpdateRoom(room);
+        return entity.UpdateRoom(room).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetRoom")]
     public List<Room> GetRoom()
     {
-        return entity.GetRooms();
+        return entity.GetRooms().Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetRoom/{id}")]
     public Room GetRoom(int id)
     {
-        return entity.GetRoom(id);
+        return entity.GetRoom(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Room/{id}")]
-    public void DeleteRoom(int id)
+    public Response DeleteRoom(int id)
     {
-        entity.DeleteRoom(id);
+       return entity.DeleteRoom(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/Rooms")]
-    public void DeleteRooms()
+    public Response DeleteRooms()
     {
-        entity.DeleteRooms();
+       return entity.DeleteRooms().Value;
     }
     
     #endregion
@@ -368,44 +378,44 @@ public class ControllerProject : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost("Create/BookRoom")]
-    public void SetBookRoom([FromBody] BookRoom bookroom)
+    public Response SetBookRoom([FromBody] BookRoom bookroom)
     {
-        entity.SetBookRoom(bookroom);
+       return entity.SetBookRoom(bookroom).Result.Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpPut ("Update/BookRoom")]
-    public void UpdateBookRoom([FromBody] BookRoom bookroom)
+    public Response UpdateBookRoom([FromBody] BookRoom bookroom)
     {
-        entity.UpdateBookRoom(bookroom);
+        return entity.UpdateBookRoom(bookroom).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetBookRooms")]
     public List<BookRoom> GetBookRooms()
     {
-        return entity.GetBookRooms();
+        return entity.GetBookRooms().Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpGet("GetBookRoom/{id}")]
     public BookRoom GetBokRoom(int id)
     {
-        return entity.GetBookRoom(id);
+        return entity.GetBookRoom(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/BookRoom/{id}")]
-    public void DeleteBookRoom(int id)
+    public Response DeleteBookRoom(int id)
     {
-        entity.DeleteBookRoom(id);
+        return entity.DeleteBookRoom(id).Value;
     }
     
     [Authorize(Roles = "Admin")]
     [HttpDelete("Delete/BookRooms")]
-    public void DeleteBookRooms()
+    public Response DeleteBookRooms()
     {
-        entity.DeleteBookRooms();
+      return entity.DeleteBookRooms().Value;
     }
     
     #endregion

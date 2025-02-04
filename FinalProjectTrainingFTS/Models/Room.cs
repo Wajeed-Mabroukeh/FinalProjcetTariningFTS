@@ -22,4 +22,8 @@ public partial class Room
     public double DiscountedPrice { get; set; }
 
     public virtual ICollection<BookRoom> BookRooms { get; } = new List<BookRoom>();
+
+    public virtual ICollection<CheckPayment> CheckPayments { get; } = new List<CheckPayment>();
+
+    public virtual Hotel? Hotel { get; set; }
 }
