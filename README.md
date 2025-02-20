@@ -39,4 +39,55 @@ This project is a comprehensive Travel and Accommodation Booking Platform design
 **Tools**: Postman for testing, Swagger for API documentation<br>
 **Other**: Entity Framework Core for database interaction<br>
 
+## Data Storage
+This project uses SQL Server Management Studio (SSMS) as the database management system.<br>
+The database is built on Microsoft SQL Server (MSSQL), a relational database management system (RDBMS) that supports structured query language (SQL) for managing and querying data.
+
+## Getting Started
+
+### Prerequisites
+- .NET SDK 7.0
+  
 ### Installation
+
+1. Clone the repository:
+    ```bash
+    https://github.com/Wajeed-Mabroukeh/FinalProjcetTariningFTS.git
+   ```
+2. Make sure to add Server Name and Database Name according to you:
+ ```bash
+   Server=Server Name;Database=Database Name;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true
+ ```
+
+3. Create a Migration:
+ ```bash
+   dotnet ef migrations add <MigrationName>
+ ```
+
+4. Apply the Migration:
+   ```bash
+   dotnet ef database update
+   ```
+   
+5. Navigate to the project directory:
+    ```bash
+    cd FinalProjcetTariningFTS
+    ```
+    
+4. Build and run the application:
+    ```bash
+    dotnet build
+    dotnet run
+    ```
+## Project Structure
+
+```bash
+FinalProjcetTariningFTS/
+│
+├── Program.cs              # Entry point of the application.
+├── Models/                 # Contains the data models for Passenger, Booking, Flight, etc.
+├── Services/               # Handles business logic (booking, flight search, etc.).
+├── Data/                   # File system-based data storage and retrieval.
+├── Utilities/              # Helper classes for validation and CSV parsing.
+└── README.md               # Project documentation.
+
